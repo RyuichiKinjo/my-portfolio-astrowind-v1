@@ -25,9 +25,9 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
 
 export default defineConfig({
 
-  site: 'https://github.io',
+  site: 'https://RyuichiKinjo.github.io',
   base: '/my-portfolio-astrowind-v1',
-  
+
   output: 'static',
 
   // Prefetch links as they enter the viewport for snappier navigations
