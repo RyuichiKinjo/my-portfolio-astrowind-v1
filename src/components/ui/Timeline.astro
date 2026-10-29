@@ -7,9 +7,12 @@ export interface Props {
   items?: Array<Item>;
   defaultIcon?: string;
   classes?: Record<string, string>;
+  /** Show this many items, and keep the rest collapsed until the visitor expands them. */
+  initiallyVisible?: number;
 }
 
-const { items = [], classes = {}, defaultIcon } = Astro.props as Props;
+const { items = [], classes = {}, defaultIcon, initiallyVisible } = Astro.props as Props;
+const canCollapse = typeof initiallyVisible === 'number' && initiallyVisible > 0 && items.length > initiallyVisible;
 
 const {
   container: containerClass = '',
@@ -22,39 +25,94 @@ const {
 
 {
   items && items.length > 0 && (
-    <div class={containerClass}>
-      {items.map(({ title, description, icon, classes: itemClasses = {} }, index = 0) => (
-        <div
-          class={twMerge(
-            'flex intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade',
-            panelClass,
-            itemClasses?.panel
-          )}
-        >
-          <div class="flex flex-col items-center mr-4 rtl:mr-0 rtl:ml-4">
-            <div>
-              <div class="flex items-center justify-center">
-                {(icon || defaultIcon) && (
-                  <Icon
-                    name={icon || defaultIcon}
-                    class={twMerge('w-10 h-10 p-2 rounded-full border-2', defaultIconClass, itemClasses?.icon)}
-                  />
-                )}
-              </div>
-            </div>
-            {index !== items.length - 1 && <div class="w-px h-full bg-black/10 dark:bg-slate-400/50" />}
-          </div>
-          <div class={`pt-1 ${index !== items.length - 1 ? 'pb-8' : ''}`}>
-            {title && <p class={twMerge('text-xl font-bold', titleClass, itemClasses?.title)} set:html={title} />}
-            {description && (
-              <p
-                class={twMerge('text-muted mt-2', descriptionClass, itemClasses?.description)}
-                set:html={description}
-              />
+    <div
+      class={twMerge(containerClass, canCollapse && 'group/timeline')}
+      data-collapsed={canCollapse ? 'true' : undefined}
+      data-timeline-collapse={canCollapse ? '' : undefined}
+    >
+      {items.map(({ title, description, icon, classes: itemClasses = {} }, index = 0) => {
+        const isExtra = canCollapse && index >= (initiallyVisible as number);
+        const isLast = index === items.length - 1;
+        const hideLineWhileCollapsed = canCollapse && index === (initiallyVisible as number) - 1;
+
+        return (
+          <div
+            class={twMerge(
+              'flex',
+              !isExtra &&
+                'intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade',
+              panelClass,
+              itemClasses?.panel
             )}
+            data-extra={isExtra ? 'true' : undefined}
+            hidden={isExtra}
+          >
+            <div class="flex flex-col items-center mr-4 rtl:mr-0 rtl:ml-4">
+              <div>
+                <div class="flex items-center justify-center">
+                  {(icon || defaultIcon) && (
+                    <Icon
+                      name={icon || defaultIcon}
+                      class={twMerge('w-10 h-10 p-2 rounded-full border-2', defaultIconClass, itemClasses?.icon)}
+                    />
+                  )}
+                </div>
+              </div>
+              {!isLast && (
+                <div
+                  class:list={[
+                    'w-px h-full bg-black/10 dark:bg-slate-400/50',
+                    hideLineWhileCollapsed && 'group-data-[collapsed=true]/timeline:hidden',
+                  ]}
+                />
+              )}
+            </div>
+            <div class={`pt-1 ${!isLast ? 'pb-8' : ''}`}>
+              {title && <p class={twMerge('text-xl font-bold', titleClass, itemClasses?.title)} set:html={title} />}
+              {description && (
+                <p class={twMerge('text-muted mt-2', descriptionClass, itemClasses?.description)} set:html={description} />
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+      {canCollapse && (
+        <button
+          type="button"
+          class="mt-2 ml-14 cursor-pointer font-semibold text-primary hover:underline"
+          data-timeline-toggle
+          aria-expanded="false"
+        >
+          以前の経歴を見る
+        </button>
+      )}
     </div>
   )
 }
+
+<script>
+  const collapsedLabel = '以前の経歴を見る';
+  const expandedLabel = '閉じる';
+
+  const setupTimelineToggles = () => {
+    document.querySelectorAll('[data-timeline-collapse]').forEach((root) => {
+      if (!(root instanceof HTMLElement) || root.dataset.timelineReady === 'true') return;
+      const button = root.querySelector('[data-timeline-toggle]');
+      if (!(button instanceof HTMLButtonElement)) return;
+      root.dataset.timelineReady = 'true';
+
+      button.addEventListener('click', () => {
+        const nextCollapsed = root.dataset.collapsed !== 'true';
+        root.dataset.collapsed = String(nextCollapsed);
+        root.querySelectorAll('[data-extra="true"]').forEach((item) => {
+          if (item instanceof HTMLElement) item.hidden = nextCollapsed;
+        });
+        button.textContent = nextCollapsed ? collapsedLabel : expandedLabel;
+        button.setAttribute('aria-expanded', String(!nextCollapsed));
+      });
+    });
+  };
+
+  setupTimelineToggles();
+  document.addEventListener('astro:page-load', setupTimelineToggles);
+</script>

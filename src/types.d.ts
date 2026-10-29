@@ -207,6 +207,10 @@ export interface Hero extends Omit<Headline, 'classes'>, Omit<Widget, 'isDark' |
   content?: string;
   actions?: string | CallToAction[];
   image?: string | HeroImage;
+  classes?: {
+    /** Replaces the default title size (`text-5xl md:text-6xl`). */
+    title?: string;
+  };
 }
 
 export interface Stats extends Omit<Headline, 'classes'>, Widget {
@@ -262,6 +266,8 @@ export interface Faqs extends Omit<Headline, 'classes'>, Widget {
 
 export interface Steps extends Omit<Headline, 'classes'>, Widget {
   items?: Array<Item>;
+  /** Show this many items, and keep the rest collapsed until the visitor expands them. */
+  initiallyVisible?: number;
   callToAction?: string | CallToAction;
   image?: string | Image;
   isReversed?: boolean;

@@ -11,6 +11,7 @@ const {
   subtitle = await Astro.slots.render('subtitle'),
   tagline = await Astro.slots.render('tagline'),
   items = [],
+  initiallyVisible,
   callToAction = await Astro.slots.render('callToAction'),
   image = await Astro.slots.render('image'),
   isReversed = false,
@@ -35,7 +36,11 @@ const {
           ...((classes?.headline as object) ?? {}),
         }}
       />
-      <Timeline items={items} classes={classes?.items as Record<string, never>} />
+      <Timeline
+        items={items}
+        initiallyVisible={initiallyVisible}
+        classes={classes?.items as Record<string, never>}
+      />
       {
         typeof callToAction === 'string' ? (
           <Fragment set:html={callToAction} />

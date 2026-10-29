@@ -96,10 +96,10 @@ export const headerData = {
           text: 'Article',
           href: getPermalink('get-started-website-with-astro-tailwind-css', 'post'),
         },
-        {
-          text: 'Article (with MDX)',
-          href: getPermalink('markdown-elements-demo-post', 'post'),
-        },
+        // {
+        //   text: 'Article (with MDX)',
+        //   href: getPermalink('markdown-elements-demo-post', 'post'),
+        // },
         {
           text: 'Category Page',
           href: getPermalink('tutorials', 'category'),
@@ -159,8 +159,11 @@ export const footerData = {
     { text: 'Privacy Policy', href: getPermalink('/privacy') },
   ],
   socialLinks: [
-    { ariaLabel: 'RSS', icon: 'tabler:rss', href: getAsset('/rss.xml') },
-    { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/arthelokyo/astrowind' },
+    { ariaLabel: 'YouTube', icon: 'tabler:brand-youtube', href: 'https://www.youtube.com/channel/UCL-yuRK3TYmeoBSzJSL8IQQ' },
+    { ariaLabel: 'X', icon: 'tabler:brand-x', href: 'https://x.com/RYU_K85' },
+    { ariaLabel: 'Facebook', icon: 'tabler:brand-facebook', href: 'https://www.facebook.com/ryuichi.kinjo.3?locale=ja_JP' },
+    { ariaLabel: 'ニコニコ動画', icon: 'niconico', href: 'https://www.nicovideo.jp/user/25040646' },
+    { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/RyuichiKinjo' },
   ],
   footNote: `
     Made by <a class="text-blue-600 underline dark:text-muted" href="https://arthelokyo.com"> Arthelokyo</a> · All rights reserved.
