@@ -25,7 +25,7 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
 
 export default defineConfig({
 
-  site: 'https://RyuichiKinjo.github.io',
+  site: 'https://ryuichikinjo.github.io',
   base: '/my-portfolio-astrowind-v1',
 
   output: 'static',
